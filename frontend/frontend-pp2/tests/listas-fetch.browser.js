@@ -39,11 +39,12 @@ globalThis.fetch = async (input, options = {}) => {
   requisicoes.push({ url, signal: options.signal })
   if (modo === 'rede') throw new TypeError('Sem conexão')
   let dados = []
+  const rotaComentarios = url.pathname.match(/^\/posts\/(\d+)\/comments$/)
   if (modo !== 'vazio') {
     if (url.pathname === '/posts') dados = posts
     else if (url.pathname === '/todos') dados = todos
     else if (url.pathname === '/users') dados = usuarios
-    else if (url.pathname === '/comments') dados = comentario(Number(url.searchParams.get('postId')))
+    else if (rotaComentarios) dados = comentario(Number(rotaComentarios[1]))
     else throw new Error(`Caminho inesperado: ${url.pathname}`)
   }
   const status = modo === 'http' ? 503 : 200
@@ -52,7 +53,7 @@ globalThis.fetch = async (input, options = {}) => {
   // Mantém o parse assíncrono sem depender das tarefas de streaming do navegador.
   resposta.json = async () => JSON.parse(corpo)
   // A resposta antiga termina de ler o JSON mesmo depois do cancelamento.
-  if (url.pathname === '/comments' && url.searchParams.get('postId') === '2') {
+  if (rotaComentarios?.[1] === '2') {
     resposta.json = () => new Promise((resolve) => {
       liberarComentarioAntigo = () => resolve(comentario(2))
     })
@@ -141,14 +142,15 @@ async function executar() {
   })
 
   await testar('Comentários cancelam resposta antiga e aceitam posts de 1 a 100', async () => {
-    const campo = secao('comentarios-post').querySelector('select')
-    verificar(campo?.options.length === 100, 'Seleção deve conter 100 posts')
+    const campo = secao('comentarios-post').querySelector('input[type="number"]')
+    verificar(campo?.min === '1' && campo.max === '100', 'Campo numérico deve aceitar posts de 1 a 100')
     verificar(texto('comentarios-post').includes('1 comentário'), 'Total de comentários ausente')
     verificar(secao('comentarios-post').querySelector('a[href="mailto:leitor1@example.com"]'), 'E-mail do comentário ausente')
     verificar(texto('comentarios-post').includes('Texto do comentário 1.'), 'Texto do comentário ausente')
     await mudar(campo, '2')
     verificar(/carregando/i.test(texto('comentarios-post')), 'Nova requisição deve mostrar carregamento')
     const antiga = requisicoes.at(-1)
+    verificar(antiga.url.pathname === '/posts/2/comments', 'A busca deve usar a rota aninhada dos comentários')
     await mudar(campo, '3')
     verificar(antiga.signal?.aborted, 'Requisição anterior não foi cancelada')
     verificar(texto('comentarios-post').includes('Comentário do post 3'), 'Novo post não foi carregado')
@@ -170,7 +172,7 @@ async function executar() {
     verificar(texto('recarregar').includes('503'), 'Falha HTTP deve aparecer como erro')
     modo = 'sucesso'
     await clicar(botao('recarregar', 'Tentar novamente'))
-    verificar(!secao('recarregar').querySelector('[role="alert"]') && itens('recarregar').length === 2, 'Nova tentativa não recuperou a lista')
+    verificar(!secao('recarregar').querySelector('[role="alert"]') && itens('recarregar').length === 3, 'Nova tentativa não recuperou a lista de tarefas')
   })
 
   await testar('Todos os exercícios apresentam erro HTTP e erro de rede', async () => {

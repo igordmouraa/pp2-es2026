@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
+  --text: #4b5959;
+  --text-h: #193239;
+  --bg: #f4f1e9;
+  --border: #ded9cd;
+  --code-bg: #eeece3;
+  --accent: #b9503e;
+  --accent-bg: rgba(185, 80, 62, 0.11);
+  --accent-border: rgba(185, 80, 62, 0.45);
+  --social-bg: rgba(238, 236, 227, 0.8);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
@@ -17,9 +17,9 @@
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  font: 16px/150% var(--sans);
+  letter-spacing: 0;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -32,32 +32,14 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 #root {
   width: 1126px;
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
   border-inline: 1px solid var(--border);
+  background: #fffefa;
+  box-shadow: 0 16px 48px rgba(25, 50, 57, 0.06);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -110,4 +92,161 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+#root main {
+  width: 100%;
+  gap: 1.25rem;
+}
+
+#root main > h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
+#root main > section {
+  border-color: var(--border);
+  border-radius: 8px;
+  background: #fffefa;
+}
+
+#root main > section > h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 650;
+}
+
+#root main > section[aria-labelledby="exemplos-anteriores"] {
+  background: #faf8f2;
+}
+
+#root main > section[aria-labelledby="exemplos-anteriores"] > div {
+  border-color: var(--border);
+  background: #fffefa;
+}
+
+#root main button {
+  min-height: 2.4rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.45rem 0.75rem;
+  color: var(--text-h);
+  background: var(--code-bg);
+  font-size: 0.85rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+#root main button:hover:not(:disabled) {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+#root main button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+#root main input:not([type="checkbox"]), #root main select {
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-h);
+  background: #fffefa;
+}
+
+#root main input:not([type="checkbox"]):focus, #root main select:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-bg);
+  outline-offset: 1px;
+}
+
+#root main input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+#root main a {
+  color: #286354;
+  text-underline-offset: 3px;
+}
+
+#root main [role="status"] { color: #4b5959; }
+
+#root main [role="alert"] {
+  border-left: 3px solid var(--accent);
+  padding: 0.45rem 0.7rem;
+  color: #752d24;
+  background: var(--accent-bg);
+}
+
+#root main .tarefa-concluida {
+  color: #75827b;
+  text-decoration: line-through;
+}
+
+#root main .recarregar-button {
+  margin: 0 0.8rem 0.7rem 0;
+  color: #fffefa;
+  background: var(--text-h);
+}
+
+#root main .ultima-atualizacao {
+  display: inline;
+  font-size: 0.85rem;
+}
+
+#root main section[aria-labelledby="usuarios"] > div { max-width: 100%; }
+
+#root main table { border-color: var(--border); color: var(--text); }
+#root main thead { background: var(--code-bg); }
+
+#root main [aria-pressed="true"] {
+  border-color: var(--text-h);
+  color: #fffefa;
+  background: var(--text-h);
+}
+
+#root main .comment-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+#root main .comment-input label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+#root main input[type="number"] {
+  width: 7rem;
+  padding: 0.5rem 0.7rem;
+}
+
+@media (max-width: 640px) {
+  #root main {
+    padding: 1.1rem;
+  }
+
+  #root main > h1 { font-size: 2rem; }
+
+  #root main > section {
+    padding: 1rem;
+  }
+
+  #root main > section > h2 { font-size: 1.15rem; }
+
+  #root main .space-y-4 > div[role="group"] {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root main button {
+    transition: none;
+  }
 }

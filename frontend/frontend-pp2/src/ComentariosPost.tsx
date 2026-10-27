@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { Comentario } from './tipos'
 
-const postIds = Array.from({ length: 100 }, (_, indice) => indice + 1)
-
 function ComentariosPost() {
-  const [postId, setPostId] = useState(1)
+  const [postId, setPostId] = useState('1')
   const [comentarios, setComentarios] = useState<Comentario[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
@@ -13,8 +11,11 @@ function ComentariosPost() {
     const controller = new AbortController()
 
     async function carregar() {
+      const id = Number(postId)
+      if (!Number.isInteger(id) || id < 1 || id > 100) return
+
       try {
-        const resposta = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}`, {
+        const resposta = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}/comments`, {
           signal: controller.signal,
         })
         if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status}`)
@@ -33,27 +34,34 @@ function ComentariosPost() {
     return () => controller.abort()
   }, [postId])
 
-  function selecionarPost(id: number) {
-    setCarregando(true)
+  function selecionarPost(id: string) {
+    const numero = Number(id)
+    setCarregando(id !== '' && Number.isInteger(numero) && numero >= 1 && numero <= 100)
     setErro(null)
     setComentarios([])
     setPostId(id)
   }
 
+  const numeroPostValido = postId.trim() !== '' && Number.isInteger(Number(postId)) && Number(postId) >= 1 && Number(postId) <= 100
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <label htmlFor="post-comentarios" className="text-sm font-medium text-[var(--text-h)]">Selecionar post</label>
-        <select
+    <div>
+      <div className="comment-input">
+        <label htmlFor="post-comentarios">ID do post (1 a 100)</label>
+        <input
           id="post-comentarios"
+          type="number"
+          min={1}
+          max={100}
+          step={1}
           value={postId}
-          onChange={(e) => selecionarPost(Number(e.target.value))}
-          className="rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
-        >
-          {postIds.map((id) => <option key={id} value={id}>Post {id}</option>)}
-        </select>
+          aria-describedby="post-comentarios-dica"
+          onChange={(e) => selecionarPost(e.target.value)}
+          className="rounded border px-3 py-2"
+        />
+        <span id="post-comentarios-dica" className="field-hint">Digite um número de 1 a 100.</span>
       </div>
-      {carregando ? <p role="status">Carregando comentários...</p> : erro ? (
+      {!numeroPostValido ? <p role="status">Informe um número inteiro entre 1 e 100.</p> : carregando ? <p role="status">Carregando comentários...</p> : erro ? (
         <p role="alert">Erro: {erro}</p>
       ) : (
         <>
